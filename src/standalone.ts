@@ -2,18 +2,28 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { watchFile, unwatchFile, readFileSync, existsSync, statSync } from "node:fs"
 import { resolve, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
+import { createGoalDbAccessor, type GoalDbAccessor, DEFAULT_GOAL_DB_PATH } from "./goal-db.ts"
+import { handleGoalRoute } from "./goal-routes.ts"
+import { handleControlProxy } from "./control-proxy.ts"
 
 const args = process.argv.slice(2)
 let logPath = resolve(process.env.HOME ?? "~", ".pi/agent/pi-debug.log")
 let port = 9848
+let goalDbPath = resolve(DEFAULT_GOAL_DB_PATH)
+let controlUrl: string | null = "http://localhost:9860"
 
 for (let i = 0; i < args.length; i++) {
 	if (args[i] === "--log" && args[i + 1]) logPath = resolve(args[++i])
 	else if (args[i] === "--port" && args[i + 1]) port = parseInt(args[++i], 10)
+	else if (args[i] === "--goal-db" && args[i + 1]) goalDbPath = resolve(args[++i])
+	else if (args[i] === "--control-url" && args[i + 1]) controlUrl = args[++i]
+	else if (args[i] === "--no-control") controlUrl = null
 }
 
+const goalAccessor = createGoalDbAccessor(goalDbPath)
+
 const scriptDir = dirname(fileURLToPath(import.meta.url))
-const dashboardPath = resolve(scriptDir, "standalone.html")
+const dashboardPath = resolve(scriptDir, "dashboard.html")
 
 const clients = new Set<ServerResponse>()
 let lastSize = 0
@@ -56,6 +66,17 @@ function checkUpdates() {
 
 const server = createServer((req: IncomingMessage, res: ServerResponse) => {
 	const cors = { "Access-Control-Allow-Origin": "*" }
+	const url = new URL(req.url ?? "/", `http://localhost:${port}`)
+
+	if (handleGoalRoute(url, res, goalAccessor)) return
+
+	if (handleControlProxy(req, url, res, controlUrl)) return
+
+	if (url.pathname === "/sessions") {
+		res.writeHead(200, { "Content-Type": "application/json", ...cors })
+		res.end("[]")
+		return
+	}
 
 	if (req.url === "/events") {
 		res.writeHead(200, {
@@ -77,7 +98,7 @@ const server = createServer((req: IncomingMessage, res: ServerResponse) => {
 			res.end(html)
 		} catch (e) {
 			res.writeHead(500, cors)
-			res.end("standalone.html not found")
+			res.end("dashboard.html not found")
 		}
 		return
 	}
@@ -105,4 +126,7 @@ server.listen(port, () => {
 	console.log(`Debug dashboard: http://localhost:${port}`)
 	console.log(`Watching: ${logPath}`)
 	console.log(`Entries loaded: ${cachedEntries.length}`)
+	console.log(`Goal DB: ${goalDbPath}`)
+	const st = goalAccessor.status
+	console.log(`Goal DB status: ${st.connected ? "connected" : "not connected"}${st.error ? " — " + st.error : ""}`)
 })

@@ -30,9 +30,9 @@
   --accent-bg: #ddf4ff;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'SF Mono', 'Fira Code', monospace; background: var(--bg-primary); color: var(--text-primary); font-size: 13px; }
+body { font-family: 'SF Mono', 'Fira Code', monospace; background: var(--bg-primary); color: var(--text-primary); font-size: 13px; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-.layout { display: flex; height: 100vh; }
+.layout { display: flex; height: 100%; }
 .sidebar { width: 300px; border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
 .main { flex: 1; overflow-y: auto; }
 
@@ -187,9 +187,78 @@ body { font-family: 'SF Mono', 'Fira Code', monospace; background: var(--bg-prim
 .compaction-summary { background: #0d1a14; border: 1px solid #1a3d2d; border-radius: 4px; padding: 8px; font-size: 11px; color: var(--text-secondary); white-space: pre-wrap; word-break: break-word; max-height: 200px; overflow-y: auto; }
 
 .turn-item.compaction { border-left: 3px solid #3fb950; }
+
+.tab-bar { display: flex; align-items: center; gap: 0; border-bottom: 1px solid var(--border); background: var(--bg-secondary); flex-shrink: 0; padding-right: 12px; }
+.tab-btn { background: none; border: none; border-bottom: 2px solid transparent; color: var(--text-secondary); padding: 8px 16px; font-size: 12px; font-family: inherit; cursor: pointer; transition: color 0.1s, border-color 0.1s; }
+.tab-btn:hover { color: var(--text-primary); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--bg-primary); }
+.tab-status { margin-left: auto; font-size: 10px; color: var(--text-muted); }
+.tab-status.connected { color: #3fb950; }
+.tab-status.error { color: #f85149; }
+.tab-content { flex: 1; overflow: hidden; }
+
+.goal-sidebar { width: 300px; border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+.goal-header { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.goal-header h1 { font-size: 14px; color: var(--accent); margin-bottom: 4px; }
+.goal-header .goal-stats { font-size: 11px; color: var(--text-secondary); }
+.goal-list { flex: 1; overflow-y: auto; }
+.goal-item { padding: 8px 16px; cursor: pointer; border-bottom: 1px solid var(--bg-secondary); transition: background 0.1s; }
+.goal-item:hover { background: var(--bg-secondary); }
+.goal-item.active { background: var(--bg-tertiary); border-left: 3px solid var(--accent); }
+.goal-item .goal-objective { color: var(--text-primary); font-size: 11px; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.goal-item .goal-meta { font-size: 10px; color: var(--text-secondary); margin-top: 2px; display: flex; gap: 6px; align-items: center; }
+
+.status-badge { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: bold; text-transform: uppercase; }
+.status-badge.created { background: var(--bg-tertiary); color: var(--text-secondary); }
+.status-badge.active { background: #1f3d5c; color: #58a6ff; }
+.status-badge.rework { background: #3d3d1f; color: #d29922; }
+.status-badge.review_required { background: #3d2d1f; color: #f0883e; }
+.status-badge.blocked { background: #3d1f1f; color: #f85149; }
+.status-badge.completed { background: #1f3d2d; color: #7ee787; }
+.status-badge.failed { background: #3d1f1f; color: #f85149; }
+.status-badge.cancelled { background: var(--bg-tertiary); color: var(--text-muted); }
+.status-badge.paused { background: #3d2d1f; color: #d29922; }
+
+.phase-badge { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: bold; background: var(--bg-tertiary); color: var(--text-secondary); }
+.phase-badge.idle { color: var(--text-muted); }
+.phase-badge.dispatching_worker, .phase-badge.scheduling_continue { color: #58a6ff; }
+.phase-badge.waiting_worker { color: #d29922; }
+.phase-badge.waiting_judge, .phase-badge.starting_judge, .phase-badge.applying_verdict { color: #7ee787; }
+.phase-badge.waiting_review_gate { color: #f0883e; }
+.phase-badge.waiting_human, .phase-badge.opening_human_block { color: #f85149; }
+.phase-badge.error { color: #f85149; background: #3d1f1f; }
+
+.goal-main { flex: 1; overflow-y: auto; padding: 16px; }
+
+.goal-controls { margin: 12px 0 16px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.ctrl-btn { background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px; padding: 5px 12px; color: var(--text-primary); font-size: 11px; font-family: inherit; cursor: pointer; transition: border-color 0.1s; }
+.ctrl-btn:hover { border-color: var(--border-hover); }
+.ctrl-btn.primary { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); }
+.ctrl-btn.danger { border-color: #f85149; color: #f85149; }
+.ctrl-btn:disabled { opacity: 0.4; cursor: default; }
+.ctrl-label { font-size: 10px; color: var(--text-secondary); margin-right: 4px; }
+.ctrl-input { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 3px; padding: 4px 8px; color: var(--text-primary); font-size: 11px; font-family: inherit; outline: none; }
+.ctrl-input:focus { border-color: var(--accent); }
+.ctrl-select { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 3px; padding: 4px 8px; color: var(--text-primary); font-size: 11px; font-family: inherit; outline: none; }
+.ctrl-sep { width: 1px; height: 24px; background: var(--border); margin: 0 4px; }
+
+.event-stream { margin-top: 16px; }
+.event-stream-label { font-size: 10px; color: var(--text-secondary); margin-bottom: 6px; border-bottom: 1px solid var(--border); padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
+.event-item { padding: 6px 0; border-bottom: 1px solid var(--bg-secondary); font-size: 11px; display: flex; gap: 8px; align-items: flex-start; }
+.event-item .seq { color: var(--text-muted); font-size: 10px; min-width: 32px; }
+.event-item .etype { color: var(--accent); font-weight: bold; min-width: 180px; }
+.event-item .eactor { color: var(--text-muted); font-size: 10px; min-width: 70px; }
+.event-item .etime { color: var(--text-muted); font-size: 10px; margin-left: auto; white-space: nowrap; }
+.event-item .epayload { color: var(--text-secondary); font-size: 10px; word-break: break-all; margin-top: 2px; margin-left: 40px; }
 </style>
 </head>
 <body>
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="pi-session" onclick="switchTab('pi-session')">Pi Session</button>
+  <button class="tab-btn" data-tab="goal-runtime" onclick="switchTab('goal-runtime')">Goal Runtime</button>
+  <span class="tab-status" id="goal-db-status"></span>
+</div>
+<div class="tab-content" id="tab-pi-session">
 <div class="layout">
   <div class="sidebar">
     <div class="header">
@@ -231,6 +300,21 @@ body { font-family: 'SF Mono', 'Fira Code', monospace; background: var(--bg-prim
       <div class="startup-tags" id="startup-tags"></div>
     </div>
   </div>
+</div>
+</div>
+<div class="tab-content" id="tab-goal-runtime" style="display:none">
+<div class="layout">
+  <div class="goal-sidebar">
+    <div class="goal-header">
+      <h1>Goals <button class="ctrl-btn primary" style="float:right;padding:2px 8px;font-size:10px" onclick="ctrlCreateGoal()">+ New</button></h1>
+      <div class="goal-stats" id="goal-stats">Loading... <button class="ctrl-btn danger" style="padding:1px 6px;font-size:9px;margin-left:8px" onclick="ctrlReset()">Reset DB</button></div>
+    </div>
+    <div class="goal-list" id="goal-list"></div>
+  </div>
+  <div class="goal-main" id="goal-detail">
+    <div class="empty-state"><h2>Select a goal</h2><p>Click a goal in the sidebar to view its lifecycle</p></div>
+  </div>
+</div>
 </div>
 <button class="auto-scroll-btn active" id="auto-scroll">Auto-scroll ON</button>
 <div class="kbd-hint"><span class="kbd">j</span>/<span class="kbd">k</span> navigate <span class="kbd">Esc</span> deselect <span class="kbd">Ctrl+F</span> search</div>
@@ -982,6 +1066,325 @@ function toggleTheme() {
     document.getElementById('theme-toggle').textContent = 'Dark';
   }
 })();
+// ===== Goal Runtime Tab =====
+
+let goalTabActive = false;
+let selectedGoalId = null;
+let goalEventSince = 0;
+let goalListData = [];
+let goalPollTimer = null;
+const GOAL_POLL_MS = 1000;
+
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tabName);
+  });
+  document.getElementById('tab-pi-session').style.display = tabName === 'pi-session' ? '' : 'none';
+  document.getElementById('tab-goal-runtime').style.display = tabName === 'goal-runtime' ? '' : 'none';
+  goalTabActive = (tabName === 'goal-runtime');
+  if (goalTabActive) {
+    fetchGoalDbStatus();
+    fetchGoalList();
+    startGoalPolling();
+  } else {
+    stopGoalPolling();
+  }
+}
+
+function fetchGoalDbStatus() {
+  fetch('/goal/status').then(r => r.json()).then(data => {
+    const el = document.getElementById('goal-db-status');
+    if (!el) return;
+    if (data.connected) {
+      el.textContent = '\u25CF Goal DB connected';
+      el.className = 'tab-status connected';
+    } else {
+      el.textContent = '\u25CF ' + (data.error || 'Goal DB not connected');
+      el.className = 'tab-status error';
+    }
+  }).catch(() => {});
+}
+
+function fetchGoalList() {
+  fetch('/goal/list').then(r => r.json()).then(goals => {
+    goalListData = goals;
+    renderGoalList();
+  }).catch(() => {
+    document.getElementById('goal-stats').textContent = 'Error loading goals';
+  });
+}
+
+function renderGoalList() {
+  const list = document.getElementById('goal-list');
+  const stats = document.getElementById('goal-stats');
+  if (!list) return;
+  stats.innerHTML = goalListData.length + ' goals <button class="ctrl-btn danger" style="padding:1px 6px;font-size:9px;margin-left:8px" onclick="ctrlReset()">Reset DB</button>';
+  if (!goalListData.length) {
+    list.innerHTML = '<div class="empty-state" style="padding:40px 20px"><h2>No goals</h2><p>Database empty or not connected</p></div>';
+    return;
+  }
+  list.innerHTML = goalListData.map(g => {
+    const active = g.goal_id === selectedGoalId ? 'active' : '';
+    const sbadge = '<span class="status-badge ' + g.status + '">' + g.status + '</span>';
+    const pbadge = g.runtime_phase ? '<span class="phase-badge ' + g.runtime_phase + '">' + g.runtime_phase + '</span>' : '';
+    return '<div class="goal-item ' + active + '" data-goal-id="' + escHtml(g.goal_id) + '">' +
+      '<div class="goal-meta">' + sbadge + ' ' + pbadge + '</div>' +
+      '<div class="goal-objective">' + escHtml((g.objective || '').slice(0, 80)) + '</div>' +
+      '</div>';
+  }).join('');
+}
+
+document.addEventListener('click', (e) => {
+  const item = e.target.closest('.goal-item');
+  if (item && item.dataset.goalId) selectGoal(item.dataset.goalId);
+});
+
+function selectGoal(goalId) {
+  console.log('[goal] selectGoal called:', goalId);
+  selectedGoalId = goalId;
+  goalEventSince = 0;
+  renderGoalList();
+  const detail = document.getElementById('goal-detail');
+  console.log('[goal] goal-detail element:', detail ? 'found' : 'NOT FOUND');
+  detail.innerHTML = '<div id="goal-detail-top"></div>' +
+    '<div class="event-stream"><div class="event-stream-label">Event Ledger</div><div id="event-list"></div></div>';
+  fetchGoalDetail(goalId);
+  fetchGoalEvents(goalId, 0);
+}
+
+function fetchGoalDetail(goalId) {
+  console.log('[goal] fetchGoalDetail:', goalId);
+  fetch('/goal/detail?goalId=' + encodeURIComponent(goalId)).then(r => r.json()).then(g => {
+    console.log('[goal] detail response:', g ? ('status=' + g.status + ' phase=' + g.runtime_phase) : 'null');
+    renderGoalDetail(g);
+  }).catch((e) => { console.error('[goal] detail fetch error:', e); });
+}
+
+function renderGoalDetail(g) {
+  const el = document.getElementById('goal-detail-top');
+  if (!el || !g) return;
+
+  const sbadge = '<span class="status-badge ' + g.status + '">' + g.status + '</span>';
+  const pbadge = g.runtime_phase
+    ? '<span class="phase-badge ' + g.runtime_phase + '">' + g.runtime_phase + '</span>'
+    : '<span class="phase-badge idle">no runtime state</span>';
+
+  const cards = [
+    { label: 'Status', value: sbadge },
+    { label: 'Phase', value: pbadge },
+    { label: 'Iteration', value: g.current_iteration + ' / ' + g.max_iterations },
+    { label: 'Style', value: escHtml(g.goal_style || '?') },
+    { label: 'Created', value: formatTime(g.created_at) },
+    { label: 'Updated', value: formatTime(g.updated_at) },
+  ];
+  if (g.closed_at) cards.push({ label: 'Closed', value: formatTime(g.closed_at) });
+  if (g.lease_owner) cards.push({ label: 'Lease Owner', value: escHtml(g.lease_owner) });
+  if (g.lease_expires_at) cards.push({ label: 'Lease Expires', value: formatTime(g.lease_expires_at) });
+  if (g.heartbeat_at) cards.push({ label: 'Heartbeat', value: formatTime(g.heartbeat_at) });
+  if (g.last_error) cards.push({ label: 'Last Error', value: '<span style="color:#f85149">' + escHtml(g.last_error) + '</span>' });
+
+  let html = '<div class="detail-section"><h3>Objective</h3><div class="text-block">' + escHtml(g.objective) + '</div></div>';
+  html += '<div class="meta-grid">' + cards.map(c => '<div class="meta-card"><div class="label">' + c.label + '</div><div class="value">' + c.value + '</div></div>').join('') + '</div>';
+
+  if (g.acceptance_criteria_json && g.acceptance_criteria_json !== '[]') {
+    try {
+      const criteria = JSON.parse(g.acceptance_criteria_json);
+      if (Array.isArray(criteria) && criteria.length) {
+        html += '<div class="detail-section"><h3>Acceptance Criteria</h3><div class="text-block">' +
+          criteria.map((c, i) => (i + 1) + '. ' + escHtml(typeof c === 'string' ? c : JSON.stringify(c))).join('<br>') +
+          '</div></div>';
+      }
+    } catch {}
+  }
+
+  html += renderGoalControls(g);
+
+  el.innerHTML = html;
+}
+
+function renderGoalControls(g) {
+  const phase = g.runtime_phase || 'idle';
+  const status = g.status;
+  let html = '<div class="goal-controls">';
+
+  html += '<button class="ctrl-btn primary" onclick="ctrlTick()">Tick</button>';
+  html += '<button class="ctrl-btn" onclick="ctrlAutoDrive()" style="border-color:#7ee787;color:#7ee787">Auto-Drive</button>';
+
+  if (phase === 'waiting_worker') {
+    html += '<div class="ctrl-sep"></div>';
+    html += '<span class="ctrl-label">Output:</span>';
+    html += '<input class="ctrl-input" id="ctrl-output" type="text" placeholder="worker output" style="width:140px" />';
+    html += '<span class="ctrl-label">Decision JSON:</span>';
+    html += '<input class="ctrl-input" id="ctrl-plan" type="text" placeholder="orchestrator decision or plan json" style="width:180px" />';
+    html += '<button class="ctrl-btn" onclick="ctrlCompleteJob()">Complete Job</button>';
+  }
+
+  if (phase === 'waiting_judge') {
+    html += '<div class="ctrl-sep"></div>';
+    html += '<span class="ctrl-label">Verdict:</span>';
+    html += '<select class="ctrl-select" id="ctrl-verdict"><option value="pass">pass</option><option value="fail">fail</option><option value="blocked">blocked</option></select>';
+    html += '<input class="ctrl-input" id="ctrl-reasoning" type="text" placeholder="reasoning" style="width:200px" />';
+    html += '<button class="ctrl-btn" onclick="ctrlJudgeVerdict()">Inject Verdict</button>';
+  }
+
+  if (phase === 'scheduling_continue') {
+    html += '<div class="ctrl-sep"></div>';
+    html += '<button class="ctrl-btn primary" onclick="ctrlAdvance()">Advance</button>';
+  }
+
+  if (phase === 'waiting_review_gate' || status === 'review_required') {
+    html += '<div class="ctrl-sep"></div>';
+    html += '<button class="ctrl-btn primary" onclick="ctrlApprove()">Approve</button>';
+    html += '<input class="ctrl-input" id="ctrl-reject-reason" type="text" placeholder="reject reason" style="width:160px" />';
+    html += '<button class="ctrl-btn danger" onclick="ctrlReject()">Reject</button>';
+  }
+
+  html += '</div>';
+  return html;
+}
+
+function ctrlTick() {
+  if (!selectedGoalId) return;
+  fetch('/control/tick', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ goalId: selectedGoalId }) })
+    .then(r => r.json()).then(d => { if (d.error) alert(d.error); refreshGoal(); }).catch(e => alert('Control error: ' + e));
+}
+
+function ctrlAutoDrive() {
+  if (!selectedGoalId) return;
+  const btn = event ? event.target : null;
+  if (btn) { btn.disabled = true; btn.textContent = 'Driving...'; }
+  fetch('/control/auto-drive', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ goalId: selectedGoalId }) })
+    .then(r => r.json()).then(d => {
+      if (btn) { btn.disabled = false; btn.textContent = 'Auto-Drive'; }
+      if (d.error || !d.success) {
+        const logStr = (d.log || []).map(s => s.step + ' -> ' + s.phase + (s.detail ? ' (' + s.detail + ')' : '')).join('\n');
+        alert('Auto-Drive ' + (d.success ? 'completed' : 'stopped') + ' at phase=' + d.phase + ', status=' + d.goalStatus + '\n\n' + logStr);
+      }
+      refreshGoal();
+    }).catch(e => {
+      if (btn) { btn.disabled = false; btn.textContent = 'Auto-Drive'; }
+      alert('Control error: ' + e);
+    });
+}
+
+function ctrlCompleteJob() {
+  if (!selectedGoalId) return;
+  const body = { goalId: selectedGoalId };
+  const output = document.getElementById('ctrl-output');
+  const plan = document.getElementById('ctrl-plan');
+  if (output && output.value) body.outputContent = output.value;
+  if (plan && plan.value) body.planJson = plan.value;
+  fetch('/control/complete-job', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+    .then(r => r.json()).then(d => { if (d.error) alert(d.error); refreshGoal(); }).catch(e => alert('Control error: ' + e));
+}
+
+function ctrlJudgeVerdict() {
+  if (!selectedGoalId) return;
+  const decision = document.getElementById('ctrl-verdict').value;
+  const reasoning = document.getElementById('ctrl-reasoning').value;
+  const body = { goalId: selectedGoalId, decision, reasoning };
+  if (decision === 'fail') { body.replanRequired = true; body.replanReason = reasoning || 'needs replan'; }
+  fetch('/control/judge-verdict', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+    .then(r => r.json()).then(d => { if (d.error) alert(d.error); refreshGoal(); }).catch(e => alert('Control error: ' + e));
+}
+
+function ctrlAdvance() {
+  if (!selectedGoalId) return;
+  fetch('/control/advance', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ goalId: selectedGoalId }) })
+    .then(r => r.json()).then(d => { if (d.error) alert(d.error); refreshGoal(); }).catch(e => alert('Control error: ' + e));
+}
+
+function ctrlApprove() {
+  if (!selectedGoalId) return;
+  fetch('/control/approve', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ goalId: selectedGoalId }) })
+    .then(r => r.json()).then(d => { if (d.error) alert(d.error); refreshGoal(); }).catch(e => alert('Control error: ' + e));
+}
+
+function ctrlReject() {
+  if (!selectedGoalId) return;
+  const reason = (document.getElementById('ctrl-reject-reason') || {}).value || 'rejected from dashboard';
+  fetch('/control/reject', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ goalId: selectedGoalId, reason }) })
+    .then(r => r.json()).then(d => { if (d.error) alert(d.error); refreshGoal(); }).catch(e => alert('Control error: ' + e));
+}
+
+function refreshGoal() {
+  if (!selectedGoalId) return;
+  fetchGoalDetail(selectedGoalId);
+  fetchGoalEvents(selectedGoalId, goalEventSince);
+  fetchGoalList();
+}
+
+function ctrlCreateGoal() {
+  const objective = prompt('Goal objective:');
+  if (!objective) return;
+  const criteriaStr = prompt('Acceptance criteria (comma-separated, optional):') || '';
+  const body = { objective };
+  if (criteriaStr.trim()) {
+    body.acceptanceCriteria = criteriaStr.split(',').map(s => s.trim()).filter(Boolean);
+  }
+  fetch('/control/create-goal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+    .then(r => r.json()).then(d => {
+      if (d.error) { alert(d.error); return; }
+      fetchGoalList();
+      if (d.goal_id) selectGoal(d.goal_id);
+    }).catch(e => alert('Control error: ' + e));
+}
+
+function ctrlReset() {
+  if (!confirm('Reset database? This deletes ALL goals, events, and runtime state.')) return;
+  fetch('/control/reset', { method: 'POST' })
+    .then(r => r.json()).then(d => {
+      if (d.error) { alert(d.error); return; }
+      selectedGoalId = null;
+      goalEventSince = 0;
+      document.getElementById('goal-detail').innerHTML = '<div class="empty-state"><h2>Select a goal</h2><p>Database reset. Create a new goal to start.</p></div>';
+      fetchGoalList();
+    }).catch(e => alert('Control error: ' + e));
+}
+
+function fetchGoalEvents(goalId, since) {
+  const list = document.getElementById('event-list');
+  if (!list) return;
+  fetch('/goal/events?goalId=' + encodeURIComponent(goalId) + '&since=' + since).then(r => r.json()).then(events => {
+    if (since === 0) list.innerHTML = '';
+    if (!events.length && since === 0) {
+      list.innerHTML = '<div style="color:var(--text-muted);font-size:11px;padding:8px 0">No events</div>';
+      return;
+    }
+    for (const ev of events) {
+      goalEventSince = Math.max(goalEventSince, ev.sequence_no);
+      let payload = '';
+      if (ev.payload_json) {
+        try { payload = JSON.stringify(JSON.parse(ev.payload_json)); } catch { payload = ev.payload_json; }
+      }
+      const row = document.createElement('div');
+      row.className = 'event-item';
+      row.innerHTML = '<span class="seq">#' + ev.sequence_no + '</span>' +
+        '<span class="etype">' + escHtml(ev.event_type) + '</span>' +
+        '<span class="eactor">' + escHtml(ev.actor_type || '') + '</span>' +
+        '<span class="etime">' + formatTime(ev.created_at) + '</span>' +
+        (payload ? '<div class="epayload">' + escHtml(payload) + '</div>' : '');
+      list.appendChild(row);
+    }
+  }).catch(() => {});
+}
+
+function startGoalPolling() {
+  stopGoalPolling();
+  goalPollTimer = setInterval(() => {
+    if (!goalTabActive) return;
+    fetchGoalDbStatus();
+    fetchGoalList();
+    if (selectedGoalId) {
+      fetchGoalDetail(selectedGoalId);
+      fetchGoalEvents(selectedGoalId, goalEventSince);
+    }
+  }, GOAL_POLL_MS);
+}
+
+function stopGoalPolling() {
+  if (goalPollTimer) { clearInterval(goalPollTimer); goalPollTimer = null; }
+}
 </script>
 </body>
 </html>

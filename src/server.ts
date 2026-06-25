@@ -2,10 +2,15 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { readdirSync, readFileSync, existsSync, statSync } from "node:fs"
 import { join } from "node:path"
 import { homedir } from "node:os"
+import { createGoalDbAccessor, type GoalDbAccessor } from "./goal-db.ts"
+import { handleGoalRoute } from "./goal-routes.ts"
+import { handleControlProxy } from "./control-proxy.ts"
 
 export interface DashboardServerOptions {
 	port: number
 	htmlPath: string
+	goalDbPath?: string
+	controlUrl?: string
 }
 
 export interface DashboardServer {
@@ -83,6 +88,10 @@ function peekSessionMeta(filePath: string): SessionMeta | null {
 
 export function createDashboardServer(options: DashboardServerOptions): DashboardServer {
 	const { port, htmlPath } = options
+	const goalAccessor: GoalDbAccessor | null = options.goalDbPath
+		? createGoalDbAccessor(options.goalDbPath)
+		: null
+	const controlUrl = options.controlUrl ?? null
 	let storedSystemPrompt: string | null = null
 	const clients = new Set<ServerResponse>()
 	const MAX_RUNTIME_EVENTS = 500
@@ -217,6 +226,10 @@ export function createDashboardServer(options: DashboardServerOptions): Dashboar
 	const server = createServer((req: IncomingMessage, res: ServerResponse) => {
 		const cors = { "Access-Control-Allow-Origin": "*" }
 		const url = new URL(req.url ?? "/", `http://localhost:${port}`)
+
+		if (handleGoalRoute(url, res, goalAccessor)) return
+
+		if (handleControlProxy(req, url, res, controlUrl)) return
 
 		if (url.pathname === "/events") {
 			res.writeHead(200, {
